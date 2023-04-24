@@ -33,6 +33,6 @@
     "java": ">=17"
   },
   "suggests": {
-    "wildfire_gender": ">=2.9"
+    "wildfire_gender": ">=2.10.4"
   }
 }

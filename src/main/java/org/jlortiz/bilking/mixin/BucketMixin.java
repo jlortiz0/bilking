@@ -52,13 +52,13 @@ public class BucketMixin extends Item {
         return super.useOnEntity(stack, user, entity, hand);
     }
 
-//    @Inject(at=@At("HEAD"), method="use")
-//    private void useOnSelf(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-//        if (this.fluid != Fluids.EMPTY || !user.isSneaking()) return;
-//        BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
-//        if (blockHitResult.getType() == HitResult.Type.MISS) {
-//            ItemStack itemStack = user.getStackInHand(hand);
-//            this.useOnEntity(itemStack, user, user, hand);
-//        }
-//    }
+    @Inject(at=@At("HEAD"), method="use")
+    private void useOnSelf(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
+        if (world.isClient || !world.getServer().isSingleplayer() || this.fluid != Fluids.EMPTY || !user.isSneaking()) return;
+        BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
+        if (blockHitResult.getType() == HitResult.Type.MISS) {
+            ItemStack itemStack = user.getStackInHand(hand);
+            this.useOnEntity(itemStack, user, user, hand);
+        }
+    }
 }

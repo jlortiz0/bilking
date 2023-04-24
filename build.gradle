@@ -17,6 +17,10 @@ repositories {
 	// See https://docs.gradle.org/current/userguide/declaring_repositories.html
 	// for more information about repositories.
 	maven {
+		name = 'Ladysnake Mods'
+		url = 'https://ladysnake.jfrog.io/artifactory/mods'
+	}
+	maven {
 		url "https://cursemaven.com"
 		content {
 			includeGroup "curse.maven"
@@ -32,7 +36,10 @@ dependencies {
 
 	// Fabric API. This is technically optional, but you probably want it anyway.
 	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-	modCompileOnly("curse.maven:wildfire_gender-456319:3706807")
+	modImplementation files("libs/[Fabric] Wildfire Female Gender Mod-2.10.4.jar")
+	modRuntimeOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-base:4.2.0"
+	modRuntimeOnly "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:4.2.0"
+	modRuntimeOnly("curse.maven:trinkets-341284:3786685")
 }
 
 processResources {

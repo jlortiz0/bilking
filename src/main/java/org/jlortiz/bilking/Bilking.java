@@ -1,5 +1,7 @@
 package org.jlortiz.bilking;
 
+import com.wildfire.api.WildfireAPI;
+import com.wildfire.main.GenderPlayer;
 import com.wildfire.main.WildfireGender;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -26,11 +28,12 @@ public class Bilking implements ModInitializer {
 	public static BilkType canMilk(LivingEntity e) {
 		if (e instanceof PlayerEntity) {
 			if (FabricLoader.getInstance().isModLoaded("wildfire_gender")) {
-				float boobs = WildfireGender.getPlayerById(e.getUuid()).getBustSize();
-				if (boobs > 0.35) return BilkType.PLAYER_F;
-				return BilkType.PLAYER_M;
+				GenderPlayer gender = WildfireAPI.getPlayerById(e.getUuid());
+				if (gender.getBustSize() > 0.35) return BilkType.PLAYER_F;
+				if (gender.getBulge().getSize() > 0.35) return BilkType.PLAYER_M;
+				return BilkType.PLAYER;
 			}
-			return BilkType.PLAYER;
+			return BilkType.PLAYER_F;
 		}
 		if (!(e instanceof AnimalEntity) || e.isBaby())
 			return null;

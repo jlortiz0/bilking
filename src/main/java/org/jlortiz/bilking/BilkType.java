@@ -8,7 +8,7 @@ public enum BilkType {
     HORSE("Horse Milk"),
     DONKEY("Donkey Milk"),
     MULE("Mule Milk"),
-    PLAYER("Human Milk"),
+    PLAYER("??? Milk"),
     PLAYER_M("Bilk"),
     PLAYER_F("Breast Milk");
 
