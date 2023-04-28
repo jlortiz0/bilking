@@ -40,13 +40,16 @@ public class BucketMixin extends Item {
                 user.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
                 ItemStack itemStack2 = Items.MILK_BUCKET.getDefaultStack();
                 itemStack2.setDamage(damage.ordinal());
-                itemStack.decrement(1);
-
-                if (itemStack.isEmpty())
-                    user.setStackInHand(hand, itemStack2);
-                else if (!user.getInventory().insertStack(itemStack2))
-                    user.dropItem(itemStack2, false);
-                return ActionResult.SUCCESS;
+                if (!user.isCreative()) {
+                    if (itemStack.getCount() == 1) {
+                        user.setStackInHand(hand, itemStack2);
+                    } else {
+                        itemStack.decrement(1);
+                        if (!user.getInventory().insertStack(itemStack2))
+                            user.dropItem(itemStack2, false);
+                    }
+                }
+                return ActionResult.success(user.getWorld().isClient);
             }
         }
         return super.useOnEntity(stack, user, entity, hand);
@@ -54,7 +57,7 @@ public class BucketMixin extends Item {
 
     @Inject(at=@At("HEAD"), method="use")
     private void useOnSelf(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        if (world.isClient || !world.getServer().isSingleplayer() || this.fluid != Fluids.EMPTY || !user.isSneaking()) return;
+        if (world.isClient || !world.getServer().isSingleplayer() || world.getServer().getCurrentPlayerCount() > 1 || this.fluid != Fluids.EMPTY || !user.isSneaking()) return;
         BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
         if (blockHitResult.getType() == HitResult.Type.MISS) {
             ItemStack itemStack = user.getStackInHand(hand);
