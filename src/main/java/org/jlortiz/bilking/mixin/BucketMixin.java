@@ -19,6 +19,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BucketItem.class)
@@ -34,7 +35,7 @@ public class BucketMixin extends Item {
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
-        if (itemStack.getItem() == Items.BUCKET && this.fluid == Fluids.EMPTY) {
+        if (itemStack.getItem() == Items.BUCKET) {
             BilkType damage = Bilking.canMilk(entity);
             if (damage != null) {
                 user.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
@@ -55,13 +56,16 @@ public class BucketMixin extends Item {
         return super.useOnEntity(stack, user, entity, hand);
     }
 
-    @Inject(at=@At("HEAD"), method="use")
+    @Inject(at=@At("HEAD"), method="use", cancellable = true)
     private void useOnSelf(World world, PlayerEntity user, Hand hand, CallbackInfoReturnable<TypedActionResult<ItemStack>> cir) {
-        if (world.isClient || !world.getServer().isSingleplayer() || world.getServer().getCurrentPlayerCount() > 1 || this.fluid != Fluids.EMPTY || !user.isSneaking()) return;
+        if (world.isClient || !world.getServer().isSingleplayer() || world.getServer().getCurrentPlayerCount() > 1 || !user.isSneaking()) return;
         BlockHitResult blockHitResult = raycast(world, user, RaycastContext.FluidHandling.NONE);
         if (blockHitResult.getType() == HitResult.Type.MISS) {
             ItemStack itemStack = user.getStackInHand(hand);
-            this.useOnEntity(itemStack, user, user, hand);
+            ActionResult ar = this.useOnEntity(itemStack, user, user, hand);
+            if (ar.isAccepted()) {
+                cir.setReturnValue(TypedActionResult.success(user.getStackInHand(hand)));
+            }
         }
     }
 }
