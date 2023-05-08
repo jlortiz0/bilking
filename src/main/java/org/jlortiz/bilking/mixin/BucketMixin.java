@@ -3,7 +3,6 @@ package org.jlortiz.bilking.mixin;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.fluid.Fluid;
-import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.sound.SoundEvents;
 import net.minecraft.util.ActionResult;
@@ -15,11 +14,11 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.jlortiz.bilking.BilkType;
 import org.jlortiz.bilking.Bilking;
+import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(BucketItem.class)
@@ -46,9 +45,10 @@ public class BucketMixin extends Item {
                         user.setStackInHand(hand, itemStack2);
                     } else {
                         itemStack.decrement(1);
-                        if (!user.getInventory().insertStack(itemStack2))
-                            user.dropItem(itemStack2, false);
                     }
+                }
+                if (!user.getInventory().insertStack(itemStack2)) {
+                    user.dropItem(itemStack2, false);
                 }
                 return ActionResult.success(user.getWorld().isClient);
             }
