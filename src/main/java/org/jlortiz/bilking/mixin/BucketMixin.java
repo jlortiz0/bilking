@@ -35,11 +35,9 @@ public class BucketMixin extends Item {
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity user, LivingEntity entity, Hand hand) {
         ItemStack itemStack = user.getStackInHand(hand);
         if (itemStack.getItem() == Items.BUCKET) {
-            BilkType damage = Bilking.canMilk(entity);
-            if (damage != null) {
+            ItemStack itemStack2 = Bilking.getBucket(entity);
+            if (itemStack2 != null) {
                 user.playSound(SoundEvents.ENTITY_COW_MILK, 1.0F, 1.0F);
-                ItemStack itemStack2 = Items.MILK_BUCKET.getDefaultStack();
-                itemStack2.setDamage(damage.ordinal());
                 if (!user.isCreative()) {
                     if (itemStack.getCount() == 1) {
                         user.setStackInHand(hand, itemStack2);

@@ -20,18 +20,26 @@ public class MilkBucketMixin extends Item {
 		super(settings);
 	}
 
-	private static BilkType[] names = BilkType.values();
+	private static final BilkType[] names = BilkType.values();
 
 	@Override
 	public Text getName(ItemStack is) {
-//		if (!is.hasNbt() || !is.getNbt().contains("bilk.type")) {
-//			return super.getName(is);
-//		}
-		// int damage = is.getNbt().getInt("bilk.type");
-		int damage = is.getDamage();
+		if (!is.hasNbt() || !is.getNbt().contains("bilk.type")) {
+			if (is.getDamage() != 0) {
+				is.getOrCreateNbt().putInt("bilk.type", is.getDamage());
+				is.setDamage(0);
+			} else {
+				return super.getName(is);
+			}
+		}
+		int damage = is.getNbt().getInt("bilk.type");
 		if (damage >= names.length) {
 			return super.getName(is);
 		}
-		return new LiteralText(names[damage].getName()).append(" Bucket");
+		BilkType bt = names[damage];
+		if (bt.shouldRecordOrigin() && is.getNbt().contains("bilk.origin")) {
+			return new LiteralText(is.getNbt().getString("bilk.origin")).append("'s ").append(bt.getName()).append(" Bucket");
+		}
+		return new LiteralText(bt.getName()).append(" Bucket");
 	}
 }

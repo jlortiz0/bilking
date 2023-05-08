@@ -9,6 +9,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.*;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
+import org.lwjgl.system.CallbackI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,5 +56,18 @@ public class Bilking implements ModInitializer {
 			return BilkType.MULE;
 		}
 		return null;
+	}
+
+	public static ItemStack getBucket(LivingEntity e) {
+		BilkType bt = canMilk(e);
+		if (bt == null) {
+			return null;
+		}
+		ItemStack is = Items.MILK_BUCKET.getDefaultStack();
+		is.getOrCreateNbt().putInt("bilk.type", bt.ordinal());
+		if (bt.shouldRecordOrigin()) {
+			is.getNbt().putString("bilk.origin", e.getEntityName());
+		}
+		return is;
 	}
 }
